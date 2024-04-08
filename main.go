@@ -1,6 +1,7 @@
 package main
 
 import (
+	jwtware "github.com/gofiber/contrib/jwt"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/kevinjuliow/jwtauth-gofiber/controller"
@@ -22,9 +23,14 @@ func main() {
 	})
 	//protected route
 	private := app.Group("/private")
+	private.Use(jwtware.New(jwtware.Config{
+		SigningKey: jwtware.SigningKey{
+			JWTAlg: "HS256",
+			Key:    []byte("secret"),
+		},
+	}))
 	private.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("Welcome User!")
+		return c.SendString("Welcome User Protected Routes!")
 	})
-
 	app.Listen(":8000")
 }
